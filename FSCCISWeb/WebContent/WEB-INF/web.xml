@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://Java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+	<display-name>FSFEIS</display-name>
+	<welcome-file-list>
+		<welcome-file>index.xhtml</welcome-file>
+	</welcome-file-list>
+	<context-param>
+		<description> 
+					The location where state information is saved.
+			Valid values are 'server' (typically saved in HttpSession) and 'client' (typically
+			saved as a hidden field in the form.
+			Default is server.
+		</description>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<context-param>
+		<description>
+					Comma-delimited list of context-relative resource paths under which the JSF implementation
+			will look for application configuration resources, before loading a configuration resource
+			named /WEB-INF/faces-config.xml (if such a resource exists).
+		</description>
+		<param-name>javax.faces.CONFIG_FILES</param-name>
+		<param-value/>
+	</context-param>
+	<context-param>
+		<description>
+					The default suffix for extension-mapped resources that contain JSF components.
+			Default is '.jsp'.
+		</description>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+	<context-param>
+		<description>
+					A human readable string describing where this particular JSF application is
+			in the software development lifecycle.
+			Valid values are 'Development', 'UnitTest', 'SystemTest' and 'Production'.
+			Default is 'Production'.
+			This parameter is not available in JSF 1.x.
+		</description>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Production</param-value>
+	</context-param>
+	<context-param>
+		<description>
+					Load JSF runtime when the application server starts up. If this parameter is set to false or removed,
+			JSF runtime will be loaded and initialized when the first JSF request is processed.
+			This may disable custom JSF extensions, such as factories defined in the project.
+		</description>
+		<param-name>com.ibm.ws.jsf.LOAD_FACES_CONFIG_AT_STARTUP</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+	    <param-name>
+	        javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL
+	    </param-name>
+	    <param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>primefaces.TRANSFORM_METADATA</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>-1</load-on-startup>
+		<enabled>true</enabled>
+		<async-supported>false</async-supported>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping> 
+	
+	<context-param>
+		<param-name>primefaces.THEME</param-name>
+		<param-value>saga</param-value>
+	</context-param>
+		<filter>
+		<filter-name>Primefaces FileUpload Filter</filter-name>
+		<filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>Primefaces FileUpload Filter</filter-name>
+		<servlet-name>Faces Servlet</servlet-name>
+	</filter-mapping> 
+	<context-param>
+		<description>http://stackoverflow.com/questions/2689245/fconvertdatetime-displays-wrong-date</description>
+	    <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+	    <param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<description>Workaround for the bug reported for JSF 2.0.
+(source: http://stackoverflow.com/questions/8026082/jsf-2-0-why-my-viewscope-beans-is-re-created-even-though-still-on-same-view)</description>
+		<param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>primefaces.FONT_AWESOME</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	
+	<filter>
+        <filter-name>ClickjackFilterDeny</filter-name>
+        <filter-class>org.owasp.filters.ClickjackFilter</filter-class>
+        <init-param>
+            <param-name>mode</param-name>
+            <param-value>SAMEORIGIN</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>ClickjackFilterSameOrigin</filter-name>
+        <filter-class>org.owasp.filters.ClickjackFilter</filter-class>
+        <init-param>
+            <param-name>mode</param-name>
+            <param-value>SAMEORIGIN</param-value>
+        </init-param>
+    </filter>
+
+     <!--  use the Deny version to prevent anyone, including yourself, from framing the page -->
+    <filter-mapping> 
+        <filter-name>ClickjackFilterDeny</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- use the SameOrigin version to allow your application to frame, but nobody else
+    <filter-mapping> 
+        <filter-name>ClickjackFilterSameOrigin</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+	
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<realm-name>fsccisRealm</realm-name>
+		<form-login-config>
+			<form-login-page>/index.xhtml</form-login-page>
+			<form-error-page>/index.xhtml</form-error-page>
+		</form-login-config>
+	</login-config>
+	<security-constraint>
+		<display-name>File Uploading Page</display-name>
+		<web-resource-collection>
+			<web-resource-name>File Uploading Page</web-resource-name>
+			<url-pattern>/views/Data/AgencyGroupFiles.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Uploader</role-name>
+			<role-name>System Admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<display-name>File Permission Page</display-name>
+		<web-resource-collection>
+			<web-resource-name>File Admin Page</web-resource-name> 
+			<url-pattern>/views/Data/RefFilePermission.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System Admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<display-name>Shared Files Page</display-name>
+		<web-resource-collection>
+			<web-resource-name>Shared Files Page</web-resource-name>
+			<url-pattern>/views/Data/SharedFiles.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Viewer</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<display-name>System Admin Pages</display-name>
+		<web-resource-collection>
+			<web-resource-name>Administrator Pages</web-resource-name>
+			<url-pattern>/views/Administrator/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System Admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-role>
+		<role-name>System Admin</role-name>
+	</security-role>
+	<security-role>
+		<role-name>Uploader</role-name>
+	</security-role>
+	<security-role>
+		<role-name>Viewer</role-name>
+	</security-role>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<security-constraint>
+		<display-name>All Authenticated</display-name>
+		<web-resource-collection>
+			<web-resource-name>
+				All Authenticated Pages
+			</web-resource-name>
+			<url-pattern>/views/User/Account.xhtml</url-pattern>
+			<url-pattern>/views/User/ActivityCalendar.xhtml</url-pattern>
+			<url-pattern>/views/User/UserGuide.xhtml</url-pattern> 
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System Admin</role-name>
+			<role-name>Uploader</role-name>
+			<role-name>Viewer</role-name>
+
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<display-name>All Pages Secured</display-name>
+		<web-resource-collection>
+			<web-resource-name>Secured Pages</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method-omission>GET</http-method-omission>
+			<http-method-omission>POST</http-method-omission>
+
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<error-page>
+		<error-code>401</error-code>
+		<location>/Unauthorized.xhtml</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/Unauthorized.xhtml</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/Error Page/PageNotFound.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/PageExpired.jsp</location>
+	</error-page>
+	<error-page>
+		<exception-type>
+			javax.faces.application.ViewExpiredException
+		</exception-type>
+		<location>/PageExpired.jsp</location>
+	</error-page> 
+	<security-constraint>
+		<display-name>User Management Pages</display-name>
+		<web-resource-collection>
+			<web-resource-name>User Management Pages</web-resource-name>
+			<url-pattern>/views/User/Users.xhtml</url-pattern>
+			<url-pattern>/views/User/RefSecurityQuestion.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System Admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<context-param>
+   		<param-name>com.ibm.ws.webcontainer.ADD_STS_HEADER_WEBAPP</param-name>
+  		<param-value>max-age=31536000; includeSubDomains; preload</param-value>
+	</context-param>
+	<context-param>    
+		<param-name>org.apache.myfaces.FLASH_SCOPE_DISABLED</param-name>    
+		<param-value>true</param-value>
+	</context-param>
+</web-app>

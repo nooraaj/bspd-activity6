@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="FSCCISEJB_PU">
+	    <jta-data-source>jdbc/fsccis</jta-data-source>
+	    <class>com.bsp.fsccis.entity.AuditTrail</class>
+	    <class>com.bsp.fsccis.entity.RefAgency</class>
+	    <class>com.bsp.fsccis.entity.RefAgencyGroup</class>
+	    <class>com.bsp.fsccis.entity.RefAgencyGroupFolderVisible</class>
+	    <class>com.bsp.fsccis.entity.RefAgencyGroupFolderVisiblePK</class>
+	    <class>com.bsp.fsccis.entity.RefFilePermission</class>
+	    <class>com.bsp.fsccis.entity.RefFilePermissionPK</class>
+	    <class>com.bsp.fsccis.entity.RefFileProperty</class>
+	    <class>com.bsp.fsccis.entity.RefSecurityQuestion</class>
+	    <class>com.bsp.fsccis.entity.RefUserAccounts</class>
+	    <class>com.bsp.fsccis.entity.RefUserRole</class>
+	    <class>com.bsp.fsccis.entity.RefUserRolePK</class>
+	    <class>com.bsp.fsccis.entity.SysConfiguration</class>
+	    <class>com.bsp.fsccis.entity.SysRole</class>
+	    <class>com.bsp.fsccis.entity.TrustedGroups</class>
+	    <class>com.bsp.fsccis.entity.TrustedGroupsPK</class>
+	    <class>com.bsp.frprr.entity.FRPFilePath</class>
+	    
+	    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+	    <properties>
+	    	<property name="openjpa.jdbc.DBDictionary" value="batchLimit=-1" />
+	    </properties>
+	</persistence-unit>
+</persistence>

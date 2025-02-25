@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Facelet Title</title>
+</h:head>
+<h:body>
+
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+		<ui:define name="title">
+			<c:set var="title" value="Agency List" scope="request" />
+		</ui:define>
+		<ui:define name="rightpane">
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true" />
+				<p:remoteCommand name="update"
+					actionListener="#{editAgency.update}" />
+				<p:panelGrid>
+					<p:row>
+						<p:column>
+							<p:outputLabel for="agency" value="Agency:" styleClass="textlabel"/>
+						</p:column>
+						<p:column style="text-align:right">
+							<p:commandButton icon="fa fa-plus" title="Add" tabindex="1"  
+								onclick="PF('dlgAgency').show();" process="@this"
+								update=":dlgAgencyForm"
+								action="#{editAgency.initNewEntity}">
+								<f:setPropertyActionListener
+									target="#{genericCRUD.addEditMode}" value="ADD" />
+								<f:setPropertyActionListener
+									target="#{editAgency.focusEntity}" value="RefAgency" />
+							</p:commandButton>
+							<p:commandButton icon="fa fa-edit" title="Edit" tabindex="2"  
+								onclick="PF('dlgAgency').show();" process="@this"
+								action="#{editAgency.initEditEntity}"
+								update=":dlgAgencyForm">
+								<f:setPropertyActionListener
+									target="#{genericCRUD.addEditMode}" value="EDIT" />
+								<f:setPropertyActionListener
+									target="#{editAgency.focusEntity}"
+									value="RefAgency" />
+							</p:commandButton>
+						</p:column>
+						<p:column>
+							<p:outputLabel for="agencyGroup" value="Group:" styleClass="textlabel"/>
+						</p:column>
+						<p:column style="text-align:right">
+							<p:commandButton icon="fa fa-plus" title="Add" tabindex="4"
+								onclick="PF('dlgAgencyGroup').show();" process="@this"
+								update=":dlgAgencyGroupForm"
+								action="#{editAgency.initNewEntity}">
+								<f:setPropertyActionListener
+									target="#{genericCRUD.addEditMode}" value="ADD" />
+								<f:setPropertyActionListener
+									target="#{editAgency.focusEntity}" value="RefAgencyGroup" />
+							</p:commandButton>
+							<p:commandButton icon="fa fa-edit" title="Edit" tabindex="5"
+								onclick="PF('dlgAgencyGroup').show();" process="@this"
+								action="#{editAgency.initEditEntity}"
+								update=":dlgAgencyGroupForm">
+								<f:setPropertyActionListener
+									target="#{genericCRUD.addEditMode}" value="EDIT" />
+								<f:setPropertyActionListener
+									target="#{editAgency.focusEntity}"
+									value="RefAgencyGroup" />
+							</p:commandButton>
+						</p:column>
+						<p:column>
+							<p:outputLabel for="autoAssign" value="Auto Assign:" styleClass="textlabel"/>
+						</p:column>
+						<p:column style="text-align:right"></p:column>
+					</p:row>
+					<p:row>
+						<p:column style="vertical-align:top" colspan="2">
+							<p:selectManyMenu id="agency" tabindex="3" style="width:150px" converter="omnifaces.SelectItemsConverter"
+								value="#{editAgency.agency.selectedList}">
+								<p:ajax event="change"
+									listener="#{editAgency.updateAgency}"
+									update="agencyGroup growl" />
+								<f:selectItems value="#{editAgency.agency.list}"
+									var="sc" itemValue="#{sc}" itemLabel="#{sc.agencyShortname}" />
+							</p:selectManyMenu>
+						</p:column>
+						<p:column style="vertical-align:top;" colspan="2">
+							<p:selectManyMenu id="agencyGroup" tabindex="6" style="width: 300px" converter="omnifaces.SelectItemsConverter"
+								value="#{editAgency.agencyGroup.selectedList}">
+								<p:ajax event="change"
+									listener="#{editAgency.updateAgencyGroup}"
+									update="growl autoAssign" />
+								<f:selectItems value="#{editAgency.agencyGroup.list}" 
+									itemLabelEscaped="false"
+									var="dt" itemValue="#{dt}" itemLabel="#{dt.accessLevel eq 1 ? '&lt;span class=\'systemowner\'&gt;'.concat(dt.agencyGroupShortname).concat('&lt;/span&gt;') :
+																			dt.accessLevel eq -1 ? '&lt;span class=\'disableduser\'&gt;'.concat(dt.agencyGroupShortname).concat('&lt;/span&gt;') :
+																									'&lt;span class=\'regular\'&gt;'.concat(dt.agencyGroupShortname).concat('&lt;/span&gt;')}"/>
+							</p:selectManyMenu>
+							<p:selectBooleanCheckbox id="disabledCb" styleClass="tinychkbox" value="#{editAgency.includeDisabled}">
+				            	<p:ajax update="agencyGroup" process="agency @this" partialSubmit="true" listener="#{editAgency.updateAgency}"/>
+			            	</p:selectBooleanCheckbox>
+							<h:outputLabel for="disabledCb" value="Include Disabled?" style="padding-left:5px" styleClass="tinytext"/>
+						</p:column>
+						
+						<p:column style="vertical-align:top;" colspan="2">
+							<p:selectManyMenu id="autoAssign" converter="omnifaces.SelectItemsConverter"
+								value="#{editAgency.trustedGroup.selectedList}" 
+								showCheckbox="true" >
+								<p:ajax event="change"
+									listener="#{editAgency.updateTrustedGroup}"
+									update="growl" />
+								<f:selectItems value="#{editAgency.trustedGroup.list}" var="dt" itemValue="#{dt}"
+									itemLabel="#{dt.agencyId.agencyShortname} - #{dt.agencyGroupShortname}"/>
+							</p:selectManyMenu>
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column></p:column>
+						<p:column></p:column>
+						<p:column colspan="2">
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+		</h:form>
+			<p:dialog appendTo="@(body)" header="Agency" widgetVar="dlgAgency"
+				resizable="false" modal="true">
+				<h:form id="dlgAgencyForm">
+					<br />
+					<table>
+						<tr>
+							<td><p:outputLabel for="refName" value="Name:" /></td>
+							<td><p:inputText id="refName"
+									value="#{genericCRUD.entity.agencyName}"
+									required="true" label="agencyName" /></td>
+						</tr>
+						<tr>
+							<td><p:outputLabel for="refShortName" value="Short Name:" /></td>
+							<td><p:inputText id="refShortName"
+									value="#{genericCRUD.entity.agencyShortname}"
+									required="true" label="agencyShortName" /></td>
+						</tr>
+					</table>
+					<br />
+					<p:commandButton id="add" value="Add"
+						rendered="#{genericCRUD.addEditMode eq 'ADD'}"
+						action="#{editAgency.add}" update=":form"
+						oncomplete="if (args &amp;&amp; !args.validationFailed){PF('dlgAgency').hide();}" />
+					<p:commandButton id="edit" value="Edit"
+						rendered="#{genericCRUD.addEditMode eq 'EDIT'}"
+						action="#{editAgency.edit}" update=":form"
+						oncomplete="if (args &amp;&amp; !args.validationFailed){PF('dlgAgency').hide();}" />
+					<p:commandButton id="cancelButton" value="Cancel" process="@this"
+						oncomplete="PF('dlgAgency').hide();" />
+				</h:form>
+			</p:dialog>
+			<p:dialog appendTo="@(body)" header="Agency Group" widgetVar="dlgAgencyGroup"
+				resizable="false" modal="true">
+				<h:form id="dlgAgencyGroupForm">
+					<br />
+					<table>
+						<tr>
+							<td><p:outputLabel for="refAGName" value="Name:" /></td>
+							<td><p:inputText id="refAGName"
+									value="#{genericCRUD.entity.agencyGroupName}"
+									required="true" label="agencyGName" /></td>
+						</tr>
+						<tr>
+							<td><p:outputLabel for="refAGShortName" value="Short Name:" /></td>
+							<td><p:inputText id="refAGShortName"
+									value="#{genericCRUD.entity.agencyGroupShortname}"
+									required="true" label="agencyGroupShortname" /></td>
+						</tr>
+						<tr>
+							<td><p:outputLabel for="accessLevel" value="Access Level:" /></td>
+							<td>
+								<p:selectOneMenu id="accessLevel" required="true" value="#{genericCRUD.entity.accessLevel}">
+									<f:selectItem itemLabel="System User" itemValue="0"/>
+									<f:selectItem itemLabel="System Owner" itemValue="1"/>
+									<f:selectItem itemLabel="Disabled" itemValue="-1"/>
+								</p:selectOneMenu>
+							</td>
+						</tr>
+					</table>
+					<br />
+					<p:commandButton id="add" value="Add"
+						rendered="#{genericCRUD.addEditMode eq 'ADD'}"
+						action="#{editAgency.addAgencyGroup}" update=":form"
+						oncomplete="if (args &amp;&amp; !args.validationFailed){PF('dlgAgencyGroup').hide();}" />
+					<p:commandButton id="edit" value="Edit"
+						rendered="#{genericCRUD.addEditMode eq 'EDIT'}"
+						action="#{editAgency.edit}" update=":form"
+						oncomplete="if (args &amp;&amp; !args.validationFailed){PF('dlgAgencyGroup').hide();}" />
+					<p:commandButton id="cancelButton" value="Cancel" process="@this"
+						oncomplete="PF('dlgAgencyGroup').hide();" />
+				</h:form>
+			</p:dialog>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

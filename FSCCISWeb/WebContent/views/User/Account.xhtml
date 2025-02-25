@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Facelet Title</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+
+		<ui:define name="title">
+			<c:set var="title" value="User Account" scope="request" />
+		</ui:define>
+		<ui:define name="rightpane">
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true" />
+				<p:outputPanel>
+					<p:panelGrid styleClass="transparent_table">
+						<p:row>
+							<p:column>
+							</p:column>
+							<p:column style="width: 130px !important;">
+							</p:column>
+							<p:column>
+								<p:outputLabel for="existingrole" value="Role:" styleClass="textlabel"/>
+							</p:column>
+							<p:column rowspan="4" style="vertical-align:top">
+								<p:dataList id="existingrole" value="#{accountBean.entity.refUserRoleList}" 
+									styleClass="transparent"
+									var="r" type="ordered" emptyMessage="No Roles Assigned">
+									#{r.sysRoles.roleName}
+								</p:dataList>
+							</p:column>
+							<p:column rowspan="3">
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="username" value="User Name:" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<h:outputText id="username" 
+									value="#{accountBean.entity.userName}" />
+							</p:column>
+							<p:column></p:column>
+							<p:column>
+							</p:column>
+							<p:column rowspan="3" style="vertical-align:top">
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="lastname" value="Last Name:" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<h:outputText id="lastname"  
+									value="#{accountBean.entity.lastName}"/>
+							</p:column>
+							<p:column></p:column>
+							<p:column>
+							</p:column>
+							<p:column rowspan="3" style="vertical-align:top">
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="firstname" value="First Name:" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<h:outputText id="firstname"
+									value="#{accountBean.entity.firstName}"/>
+							</p:column>
+							<p:column></p:column>
+							<p:column>
+							</p:column>
+							<p:column rowspan="3" style="vertical-align:top">
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="middlename" value="Middle Name:" styleClass="textlabel"/>
+							</p:column>
+							<p:column >
+								<h:outputText id="middlename"
+									value="#{accountBean.entity.middleName}"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel for="status" value="Status:" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<h:outputText id="status" 
+									value="#{accountBean.entity.accountStatus.intValue() eq 1 ? 'Active': 
+											 accountBean.entity.accountStatus.intValue() eq 2 ? 'Inactive':''}" />
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="email" value="Email:" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<h:outputText id="email"
+									value="#{accountBean.entity.email}"/>
+							</p:column>
+							<p:column rowspan="2">
+								<p:outputLabel value="Actions:" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<p:commandButton icon="fa fa-lock" value="Change Password" 
+									action="#{accountBean.changePassword}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="agencyGroup" value="Agency :" styleClass="textlabel"/>
+							</p:column>
+							<p:column>
+								<h:outputText id="agencyGroup"
+									value="#{accountBean.entity.agencyId.agencyShortname} - #{accountBean.entity.refAgencyGroupId.agencyGroupShortname}"/>
+							</p:column>
+							<p:column>
+								<p:commandButton icon="fa fa-question" value="Change Security Question/Answer" 
+									action="#{accountBean.changeSecurityQuestionAnswer}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column colspan="5">
+								<p:messages id="rolemsg" closable="true" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+				</p:outputPanel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

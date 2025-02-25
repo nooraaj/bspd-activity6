@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+	<ui:define name="title">
+		<c:set var="title" value="Shared Files" scope="request" />
+	</ui:define>
+
+	<ui:define name="rightpane">
+		<p:outputPanel rendered="#{sharedFilesBean.sampleViewMode}" styleClass="ui-messages-error ui-corner-all">
+			<span class="ui-messages-info-icon" ></span>
+			<h:outputText rendered="#{sharedFilesBean.sampleViewMode}" value="NOTE:" style="font-weight:bold"
+				styleClass="ui-messages-error-summary"/>
+			<h:outputText rendered="#{sharedFilesBean.sampleViewMode}" value=" Sample view for accounts with VIEWER role: Agency Group - #{param['sampleView']}, Owner - #{param['owner']}"
+				styleClass="ui-messages-error-summary"/>
+		</p:outputPanel>
+		
+		<h:form id="form1">	
+			<p:outputPanel id="framepanel" styleClass="ui-widget-content" style="overflow: auto">
+				<p:tabView value="#{sharedFilesBean.agencyGroupList}" var="agencyGroup" dynamic="true" 
+					rendered="#{not sharedFilesBean.sampleViewMode}"
+					activeIndex="#{sharedFilesBean.activeIndex}" styleClass="noborder tabviewstyle">
+					<p:ajax event="tabChange" listener="#{sharedFilesBean.onTabChange}" update=":form1:outerpanel"/>
+					
+					<p:tab title="#{agencyGroup.agencyId.agencyShortname} - #{agencyGroup.agencyGroupShortname}">
+					</p:tab>
+				</p:tabView>
+			
+				<p:outputPanel id="outerpanel" styleClass="noborder">
+					<p:panelGrid styleClass="noborder">
+						<p:row styleClass="noborder">
+							<p:column styleClass="layoutheight" style="width:250px"
+								rendered="#{(sharedFilesBean.mapAgencyFolderVisible[sharedFilesBean.focusAgencyGroupTab.agencyGroupId]) or (sharedFilesBean.sampleViewMode and sharedFilesBean.mapAgencyFolderVisible[sharedFilesBean.focusAgencyGroupTab.agencyGroupId])}">
+							    <p:outputPanel id="leftpanel" styleClass="layoutheight" style="width:250px">
+									<p:growl id="growl" showDetail="true"/>
+								    <p:menu styleClass="nonadminmenu" style="width:auto;" 
+								    	model="#{sharedFilesBean.menuModelMap[sharedFilesBean.focusAgencyGroupTab.agencyGroupId]}" />
+							    </p:outputPanel>
+							</p:column>
+							<p:column styleClass="layoutheight">
+								<p:outputPanel id="rightpanel" styleClass="layoutheight">
+						    		<p:dataTable id="reporttable" value="#{sharedFilesBean.entityList}" var="report"
+						    		selection="#{sharedFilesBean.selectedFiles}" rowKey="#{report.filePropertyId}">
+						    		<p:ajax  event="rowSelectCheckbox" global="false" process="@this" listener="#{sharedFilesBean.selectedFilesMany}" update=":form1:dlSelected"/>
+					    			<p:ajax  event="rowUnselectCheckbox" global="false" process="@this" update=":form1:dlSelected"/>
+					    			
+						    		 <p:column selectionMode="multiple" style="width:2%"/>
+							    		<p:column headerText="Name">
+							    			<p:panelGrid styleClass="noborder_table transparent_table">
+							    				<p:row>
+								    				<p:column style="width: 15px;">
+								    					<span class="ui-icon #{report.fileType eq 2 ? 'ui-pdf':
+								    									report.fileType eq 3 ? 'ui-xls':
+								    									report.fileType eq 4 ? 'ui-ppt':
+								    									report.fileType eq 5 ? 'ui-doc':''}"></span>
+								    				</p:column>
+								    				<p:column>
+								    					<h:outputText style="" value="#{report.fileName}"/>
+								    				</p:column>
+							    				</p:row>
+							    			</p:panelGrid>
+							    		</p:column>
+							    		<p:column headerText="Size" width="60" style="text-align:center">
+							    			#{report.size}
+							    		</p:column>
+							    		<p:column headerText="Date Updated" width="130" style="text-align:center">
+								    		<h:outputText value="#{report.cdate}" >
+											    <f:convertDateTime pattern="MMM dd yyyy" />
+											</h:outputText>
+							    			
+							    		</p:column>
+							    		<p:column headerText="Actions" width="70"  style="text-align:center">
+							    			<p:commandButton icon="fa fa-download" label="download" 
+							    				rendered="#{not sharedFilesBean.sampleViewMode}"
+							    				ajax="false" action="#{sharedFilesBean.download(report)}"/>
+							    		</p:column>
+							    	</p:dataTable>
+							    	<div class="grid-container6">
+							    	<div id="aa" class="grid-item-download">
+							    	<p:commandButton id="dlSelected" value="Download Selected Files"
+					    			   style="float:right;" icon="pi pi-arrow-down" styleClass="mr-2"
+					    			   actionListener="#{sharedFilesBean.dlselectedFiles}" ajax="false" 
+					    			   rendered="#{not sharedFilesBean.sampleViewMode}">
+					    			   </p:commandButton>
+									</div>
+									</div>
+							    </p:outputPanel>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+			    </p:outputPanel>
+		    </p:outputPanel>
+    	</h:form>
+	</ui:define>
+</ui:composition>

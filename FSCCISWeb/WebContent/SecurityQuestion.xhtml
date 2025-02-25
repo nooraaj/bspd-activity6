@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Security Question</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+
+		<ui:define name="rightpane">
+			<div class="login_form">
+				<h:form id="form">
+					<p:growl id="msgs" showDetail="true" sticky="false" />
+					<p:panel header="Page Not Found" rendered="#{securityQuestionBean.sessionInvalid}">
+						Sorry. Your requested page cannot be found. Invalid Session Detected.
+					</p:panel>
+					<p:panel header="Page Not Found" rendered="#{securityQuestionBean.process eq null and not securityQuestionBean.sessionInvalid}">
+						Sorry. Your requested page cannot be access via Address bar. 
+					</p:panel>
+					<p:panel header="Security Question" styleClass="transparent noborder" rendered="#{not securityQuestionBean.sessionInvalid and securityQuestionBean.process ne null}">
+						<p:outputPanel styleClass="ui-widget-content" style="padding:10px">
+							<p:panelGrid styleClass="transparent_table">
+								<p:row>
+									<p:column>
+										<p:outputLabel for="question" value="Question:" />
+									</p:column>
+									<p:column>
+										<p:selectOneMenu id="question" converter="omnifaces.SelectItemsConverter"
+											value="#{securityQuestionBean.user.securityQuestionId}" style="opacity:1"
+											required="true" disabled="#{securityQuestionBean.process eq 'FORGOT_PASSWORD'}">
+											<f:selectItem itemLabel="--Select One--"
+												noSelectionOption="true" />
+											<f:selectItems
+												value="#{listGenerator.getList('RefSecurityQuestion')}" var="q"
+												itemLabel="#{q.question}" itemValue="#{q}" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row> 
+								<p:row>
+									<p:column>
+										<p:outputLabel for="answer" value="Answer:" />
+									</p:column>
+									<p:column>
+										<p:inputText required="true" placeholder="Enter Answer"
+											value="#{securityQuestionBean.answer}" autocomplete="off"
+											id="answer"/>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column rendered="#{securityQuestionBean.process eq 'FORGOT_PASSWORD'}">
+										<p:outputLabel for="jcaptcha" value="Captcha: " />
+									</p:column>
+									<p:column rendered="#{securityQuestionBean.process eq 'FORGOT_PASSWORD'}">
+										<p:inputText required="true" id="jcaptcha"  autocomplete="off" 
+											value="#{securityQuestionBean.jcaptcha}" />
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column rendered="#{securityQuestionBean.process eq 'FORGOT_PASSWORD'}">
+										
+									</p:column>
+									<p:column colspan="2" rendered="#{securityQuestionBean.process eq 'FORGOT_PASSWORD'}"> 
+										<p:commandLink update=":form:msgs jcaptchaImg" immediate="true"
+											ajax="false" action="securityQuestionBean.refreshCaptcha">
+											<p:graphicImage id="jcaptchaImg" cache="false"
+												value="#{captchaManager.captchaImage}"
+												style="border: 1px solid" />
+										</p:commandLink>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column colspan="2">
+										<p:commandButton value="Save" rendered="#{securityQuestionBean.process eq 'NEW_QUESTION' or securityQuestionBean.process eq 'CHANGE_QUESTION'}"
+											update=":form:msgs" action="#{securityQuestionBean.save}" />
+										<p:commandButton value="Submit" rendered="#{securityQuestionBean.process eq 'FORGOT_PASSWORD'}"
+											update=":form:msgs" action="#{securityQuestionBean.validateAnswer}" />
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+						</p:outputPanel>
+					</p:panel>
+				</h:form>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Facelet Title</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+
+		<ui:define name="title">
+			<c:set var="title" value="User List" scope="request" />
+		</ui:define>
+		<ui:define name="rightpane">
+			<h:form id="form">
+				<div style="height:30px">
+					<p:commandButton value="Add" style="float:right" process="@this" 
+					update=":dlgForm" action="#{editUser.initDialog}"
+					onclick="PF('dlg').show();" icon="fa fa-plus" >
+						<f:setPropertyActionListener target="#{editUser.addEditMode}"
+							value="ADD"/>
+					</p:commandButton>
+				</div>
+				<p:growl id="growl" showDetail="true"/>
+				<p:dataTable id="tbl" value="#{editUser.entityList}" var="e" widgetVar="userTbl" 
+					paginator="true" rows="10" scrollable="true" filteredValue="#{editUser.filteredUserList}"
+					paginatorPosition="bottom" paginatorAlwaysVisible="false">
+					<p:column filterBy="#{e.userName}" headerText="User Name" width="15%">
+						<h:outputText value="#{e.userName}" />
+					</p:column>
+					<p:column headerText="Name">
+						<h:outputText value="#{e.lastName}, #{e.firstName}" width="20%"/>
+					</p:column>
+					<p:column headerText="Email" width="15%">
+						<h:outputText value="#{e.email}"/>
+					</p:column>
+					<p:column headerText="status" filterBy="#{e.accountStatus}" width="10%">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('userTbl').filter()">
+								<f:selectItem itemLabel="All" itemValue="#{null}"/>
+								<f:selectItem itemLabel="Active" itemValue="1"/>
+								<f:selectItem itemLabel="Inactive" itemValue="2"/>
+							</p:selectOneMenu>
+						</f:facet>
+						<h:outputText value="#{e.accountStatus.intValue() eq 1 ? 'Active': e.accountStatus.intValue() eq 2 ? 'Inactive':''}"/>
+					</p:column>
+					<p:column filterBy="#{e.agencyId.agencyShortname}" headerText="Agency">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('userTbl').filter()">
+			                    <f:selectItem itemLabel="All" itemValue=""/>
+			                	<f:selectItems value="#{editUser.agencyList}" var="#{agency}" itemLabel="#{agency}" itemValue="#{agency}"/>
+			                </p:selectOneMenu>
+			            </f:facet>
+						<h:outputText value="#{e.agencyId.agencyShortname}" />
+					</p:column>
+					<p:column filterBy="#{e.refAgencyGroupId.agencyGroupShortname}" headerText="Group">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('userTbl').filter()">
+			                    <f:selectItem itemLabel="All" itemValue=""/>
+			                	<f:selectItems value="#{editUser.agencyGroupList}" var="#{agencyGroup}" itemLabel="#{agencyGroup}" itemValue="#{agencyGroup}"/>
+			                </p:selectOneMenu>
+			            </f:facet>
+						<h:outputText value="#{e.refAgencyGroupId.agencyGroupShortname}" />
+					</p:column>
+					<p:column filterBy="#{e.displayRoleList}" filterMatchMode="contains" headerText="Assigned Roles">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('userTbl').filter()">
+			                    <f:selectItem itemLabel="All" itemValue=""/>
+			                    <f:selectItem itemLabel="System Admin" itemValue="System Admin" />
+			                    <f:selectItem itemLabel="User" itemValue="User" />
+			                </p:selectOneMenu>
+			            </f:facet>
+						<h:outputText value="#{e.displayRoleList}" />
+					</p:column>
+					<p:column width="7%">
+						<p:commandButton value="Edit" oncomplete="PF('dlg').show()"
+							update=":dlgForm" action="#{editUser.initDialog}">
+							<f:setPropertyActionListener target="#{editUser.entity}"
+								value="#{e}" />
+							<f:setPropertyActionListener target="#{editUser.addEditMode}"
+								value="EDIT"/>
+						</p:commandButton>
+						<p:commandButton icon="fa fa-unlock" action="#{editUser.resetLoginAttempts(e)}" 
+							rendered="#{e.loginAttempts ge 3}" title="Unlock User" update=":form:growl :form:tbl"/>
+					</p:column>
+				</p:dataTable>
+				<p:panelGrid rendered="#{p:ifGranted('System Admin')}" styleClass="noborder_table transparent_table">
+    				<p:row>
+	    				<p:column style="width: 15px;">
+	    					<span class="ui-icon ui-setting"></span>
+	    				</p:column>
+	    				<p:column>
+	    					<p:link outcome="/views/User/RefSecurityQuestion.xhtml" value="Manage Security Question"/>
+	    				</p:column>
+    				</p:row>
+    			</p:panelGrid>
+			</h:form>
+			<p:dialog appendTo="@(body)" header="Users"
+				widgetVar="dlg" resizable="false" modal="true">
+				<h:form id="dlgForm">
+					<br />
+					<p:panelGrid styleClass="transparent_table">
+						<p:row>
+							<p:column><p:outputLabel for="username" value="User Name:" /></p:column>
+							<p:column><p:inputText id="username" disabled="#{editUser.addEditMode eq 'EDIT'}"
+									value="#{editUser.entity.userName}" tabindex="2"
+									required="true" label="User Name" /></p:column>
+							<p:column><p:outputLabel for="roleList" value="Role:" /></p:column>
+							<p:column>
+								<p:selectOneMenu id="roleList" value="#{editUser.selectedRole}" tabindex="8" 
+									required="true" style="width: 170px;"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItems
+										value="#{editUser.sysRoleList}"
+										var="l" itemLabel="#{l.roleName}"
+										itemValue="#{l}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:commandButton icon="fa fa-plus" process="roleList @this"  tabindex="9"
+									update="rolemsg existingrole" action="#{editUser.addRole}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column><p:outputLabel for="lastname" value="Last Name:" /></p:column>
+							<p:column><p:inputText id="lastname" tabindex="3"
+									value="#{editUser.entity.lastName}"
+									required="true" label="Last Name" /></p:column>
+							<p:column rowspan="3"></p:column>
+							<p:column rowspan="3" style="vertical-align:top">
+								<p:selectManyMenu id="existingrole" value="#{editUser.selectedRoles}" 
+									converter="omnifaces.SelectItemsConverter" tabindex="11">
+									<f:selectItems value="#{editUser.focusRoleList}" var="role"
+										itemValue="#{role}" itemLabel="#{role.sysRoles.roleName}"/>
+								</p:selectManyMenu>
+							</p:column>
+							<p:column rowspan="5" style="vertical-align:top">
+								<p:commandButton icon="fa fa-minus" process="existingrole" tabindex="10"
+									update="rolemsg existingrole" action="#{editUser.disableRole}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column><p:outputLabel for="firstname" value="First Name:" /></p:column>
+							<p:column><p:inputText id="firstname" tabindex="4"
+									value="#{editUser.entity.firstName}"
+									required="true" label="First Name" /></p:column>
+						</p:row>
+						<p:row>
+							<p:column><p:outputLabel for="middlename" value="Middle Name:" /></p:column>
+							<p:column><p:inputText id="middlename" tabindex="5"
+									value="#{editUser.entity.middleName}"
+									required="true" label="Middle Name" /></p:column>
+						</p:row>
+						<p:row>
+							<p:column><p:outputLabel for="email" value="Email:" /></p:column>
+							<p:column><p:inputText id="email" tabindex="6"
+									value="#{editUser.entity.email}"
+									required="true" label="Name" />
+							</p:column> 
+							<p:column><p:outputLabel for="status" value="Status:" /></p:column>
+							<p:column>
+								<p:selectOneMenu id="status" value="#{editUser.entity.accountStatus}" 
+									converter="javax.faces.Short" tabindex="12"
+									required="true" style="width: 170px;">
+									<f:selectItem itemLabel="Active" itemValue="1"/>
+									<f:selectItem itemLabel="Inactive" itemValue="2"/>
+								</p:selectOneMenu>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column><p:outputLabel for="agency" value="Agency:" /></p:column>
+							<p:column>
+								<p:selectOneMenu id="agency" value="#{editUser.entity.agencyId}" 
+									tabindex="7"
+									required="true" style="width: 170px;">
+									<p:ajax listener="#{editUser.updateRefAgencyGroup}" update="agencyGroup roleList"/>
+									 <f:converter converterId="RefAgencyConverter"/>
+									 <f:selectItem noSelectionOption="true" itemLabel="--Select One--" itemValue="#{null}"/>
+									 <f:selectItems value="#{editUser.refAgency}" var="agency" itemLabel="#{agency.agencyShortname}" itemValue="#{agency}"/>
+								</p:selectOneMenu>
+							</p:column> 
+							<p:column><p:outputLabel value="Password:" rendered="#{editUser.addEditMode eq 'EDIT'}"/></p:column>
+							<p:column> 
+									<p:commandButton icon="fa fa-refresh" value="Reset Password" disabled="#{editUser.resetpassword}" id="resetBtn"
+										action="#{editUser.resetPassword}" rendered="#{editUser.addEditMode eq 'EDIT'}" update="dlgForm:resetBtn"/>
+							</p:column> 
+						</p:row>
+						<p:row>
+							<p:column><p:outputLabel for="agencyGroup" value="Agency Group:" /></p:column>
+							<p:column>
+								<p:selectOneMenu id="agencyGroup" value="#{editUser.entity.refAgencyGroupId}" 
+									tabindex="7"
+									required="true" style="width: 170px;">
+									<p:ajax listener="#{editUser.updateSysRoleList}" update="roleList" />
+									 <f:converter converterId="RefAgencyGroupConverter"/>
+									 <f:selectItem noSelectionOption="true" itemLabel="--Select One--" itemValue="#{null}"/>
+									 <f:selectItems value="#{editUser.refAgencyGroup}" var="agencyGroup" itemLabel="#{agencyGroup.agencyGroupShortname}" itemValue="#{agencyGroup}"/>
+								</p:selectOneMenu>
+							</p:column> 
+							<p:column><p:outputLabel value="Two Factor Authentication: " rendered="#{editUser.addEditMode eq 'EDIT'}"/></p:column>
+							<p:column>
+									<p:commandButton icon="fa fa-refresh" value="Reset 2FA Password" disabled="#{editUser.twoFactorAuthResetpassword}"  id="reset2FABtn"
+										action="#{editUser.resetTwoFactorAuth}" rendered="#{editUser.addEditMode eq 'EDIT'}" update="dlgForm:reset2FABtn"/>
+							</p:column> 
+						</p:row>
+						<p:row>
+							<p:column colspan="5">
+								<p:messages id="rolemsg" closable="true"/>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+					<br />
+					
+					<p:defaultCommand target="#{editUser.addEditMode eq 'ADD' ? 'add':
+												(editUser.addEditMode eq 'EDIT' ? 'edit':'cancelButton')}" />
+					<p:commandButton id="add" value="Add"
+						rendered="#{editUser.addEditMode eq 'ADD'}"
+						action="#{editUser.add}" update=":form"
+						oncomplete="if (args &amp;&amp; !args.validationFailed){PF('dlg').hide();PF('userTbl').filter();}" />
+					<p:commandButton id="edit" value="Confirm"
+						rendered="#{editUser.addEditMode eq 'EDIT'}"
+						action="#{editUser.edit}" update=":form"
+						oncomplete="if (args &amp;&amp; !args.validationFailed){PF('dlg').hide();PF('userTbl').filter();}" />
+					<p:commandButton id="cancelButton" value="Cancel" process="@this"
+						oncomplete="PF('dlg').hide();" />
+				</h:form>
+			</p:dialog>
+			 
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

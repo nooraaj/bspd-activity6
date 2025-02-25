@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EncryptionUtil"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/FSF_EIS/drivers/com.ibm.ws.runtime.jar"/>
+	<classpathentry kind="lib" path="D:/FSF_EIS/drivers/com.ibm.ws.security.crypto.jar"/>
+	<classpathentry kind="lib" path="D:/FSF_EIS/drivers/db2jcc4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

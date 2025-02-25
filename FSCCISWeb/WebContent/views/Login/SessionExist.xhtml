@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Multiple Session Detected</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+ 
+		<ui:define name="rightpane">
+			<p:panel header="Multiple Session Detected" rendered="#{authBean.sessionExistTag}">
+				<h:outputText style="font-weight:bold;" value="Another user is currently logged in with the same user ID or there was an unsuccessful logout in your previous session."/>
+				<br/>
+				<h:outputText style="font-weight:bold;padding-left: 5px;" value="Select from the following options: "/>				
+				<h:form id="form">
+					<p:selectOneRadio id="console" value="#{loginBean.choice}" layout="grid" columns="1">
+			            <f:selectItem itemLabel="Log out the other user with the same user ID and continue login." 
+			            	itemValue="1" />
+			            <f:selectItem itemLabel="Return to the Login page and enter a different user ID." 
+			            	itemValue="2" />
+			        </p:selectOneRadio> 
+			        
+					<p:commandButton value="Select" action="#{loginBean.processSessionExistChoice}" tabindex="4"
+						ajax="false" update=":form:msgs" >
+						<f:setPropertyActionListener target="#{loginBean.username}" value="#{authBean.username}"/>
+						<f:setPropertyActionListener target="#{loginBean.password}" value="#{authBean.password}"/>
+					</p:commandButton>
+				</h:form>
+			</p:panel>
+			
+			
+			<p:panel header="Access Denied" rendered="#{not authBean.sessionExistTag}">
+				You have insufficient privileges to view this module. Please contact your System Administrator
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

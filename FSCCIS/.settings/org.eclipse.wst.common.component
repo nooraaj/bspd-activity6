@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+        
+    <wb-module deploy-name="FSCCIS">
+                
+        <wb-resource deploy-path="/" source-path="/" tag="defaultRootSource"/>
+                
+        <dependent-module archiveName="FSCCISEJB.jar" deploy-path="/" handle="module:/resource/FSCCISEJB/FSCCISEJB">
+                        
+            <dependent-object>Module_1476346666079</dependent-object>
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="FSCCISWeb.war" deploy-path="/" handle="module:/resource/FSCCISWeb/FSCCISWeb">
+                        
+            <dependent-object>Module_1476346725111</dependent-object>
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="commons-io-2.4.jar" deploy-path="lib" handle="module:/classpath/lib/lib/commons-io-2.4.jar">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="ICAPUtility.jar" deploy-path="/lib" handle="module:/resource/ICAPUtility/ICAPUtility">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="ViewExpiredPageExceptionHandler.jar" deploy-path="/lib" handle="module:/resource/ViewExpiredPageExceptionHandler/ViewExpiredPageExceptionHandler">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="OWASPFilter.jar" deploy-path="/lib" handle="module:/resource/OWASPFilter/OWASPFilter">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="ResourceHandler.jar" deploy-path="/lib" handle="module:/resource/ResourceHandler/ResourceHandler">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                
+        <dependent-module archiveName="omnifaces-1.8.1.jar" deploy-path="lib" handle="module:/classpath/lib/lib/omnifaces-1.8.1.jar">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+        <dependent-module archiveName="javax.servlet-3.0.jar" deploy-path="/lib" handle="module:/classpath/lib/C:/Users/DELIMAAB/Downloads/javax.servlet-3.0.jar/javax.servlet-3.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+            
+    </wb-module>
+    
+</project-modules>

@@ -1,0 +1,11 @@
+/**
+*SETUP INSTRUCTIONS:
+*
+*1. Put omnifaces-1.8.1.jar as Utility Jar in your EAR
+*2. Add this project to your EAR file dependencies
+*3. Add code below to your faces-config.xml
+*/
+
+<application>
+    <resource-handler>com.utils.resourcehandler.MyResourceHandler</resource-handler>
+</application>

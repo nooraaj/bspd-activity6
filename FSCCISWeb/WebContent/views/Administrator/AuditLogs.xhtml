@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Facelet Title</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+		<ui:define name="title">
+			<c:set var="title" value="Audit Logs" scope="request" />
+		</ui:define>
+		<ui:define name="rightpane">
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true" />
+				<p:outputPanel>
+					<p:panelGrid columns="8" styleClass="transparent_table">
+						<p:outputLabel value="Date: " />
+						<p:calendar id="dateFrom" value="#{auditTrailBean.dateFrom}"
+							pattern="MM/dd/yyyy HH:mm:ss" maxdate="#{auditTrailBean.today}">
+							<p:ajax event="dateSelect" process="@this"
+								oncomplete="PF('tbl').filter()" />
+						</p:calendar>
+						<p:outputLabel value="-" />
+						<p:calendar id="dateTo" value="#{auditTrailBean.dateTo}"
+							pattern="MM/dd/yyyy HH:mm:ss"
+							mindate="#{auditTrailBean.dateFrom}"
+							maxdate="#{auditTrailBean.today}">
+							<p:ajax event="dateSelect" process="@this"
+								oncomplete="PF('tbl').filter()" />
+						</p:calendar>
+						<h:outputText value="Export: " />
+						<p:commandButton ajax="false" value="PDF" icon="fa fa-download"
+							actionListener="#{auditTrailBean.pdfExport}" />
+						<p:commandButton ajax="false" value="XLS" icon="fa fa-download"
+							actionListener="#{auditTrailBean.xlsExport}" />
+					</p:panelGrid>
+					<p:panelGrid styleClass="transparent noborder"
+						style="width: 100%; text-align: right; border-collapse: initial">
+						<p:row>
+							<p:column>
+								<p:dataTable value="#{auditTrailBean.model}" var="e"
+									widgetVar="tbl" lazy="true" paginator="true" rows="10"
+									paginatorPosition="bottom" paginatorAlwaysVisible="false">
+									<p:column headerText="Agency Group" filterBy="#{e.agencyGroupId}"
+										filterMatchMode="exact" width="60">
+										<f:facet name="filter">
+											<p:selectOneMenu onchange="PF('tbl').filter()">
+												<f:selectItem itemLabel="All" itemValue="#{null}"
+													noSelectionOption="true" />
+												<f:selectItems value="#{auditTrailBean.agencyGroupList}" var="a" itemLabel="#{a.agencyGroupShortname}" itemValue="#{a.agencyGroupId}"/>
+											</p:selectOneMenu>
+										</f:facet>
+										<h:outputText value="#{e.agencyGroupId.agencyGroupShortname}" />
+									</p:column>
+									<p:column headerText="Activity / Module" filterBy="#{e.table}"
+										filterMatchMode="contains" width="70" style="overflow:auto !important">
+										<h:outputText value="#{e.table}" />
+									</p:column>
+									<p:column headerText="Action" width="60" 
+										filterBy="#{e.action}" filterMatchMode="contains">
+										<f:facet name="filter">
+											<p:selectOneMenu onchange="PF('tbl').filter()">
+												<f:selectItem itemLabel="All" itemValue="#{null}"
+													noSelectionOption="true" />
+												<f:selectItem itemLabel="Add" itemValue="0" />
+												<f:selectItem itemLabel="Edit" itemValue="1" />
+												<f:selectItem itemLabel="View" itemValue="2" />
+												<f:selectItem itemLabel="Login/Logout" itemValue="3,4" />
+												<f:selectItem itemLabel="Download" itemValue="5" />
+												<f:selectItem itemLabel="Delete" itemValue="6" />
+											</p:selectOneMenu>
+										</f:facet>
+										<h:outputText value="#{e.action eq 0 ? 'Add' : 
+																e.action eq 1 ? 'Edit' : 
+																e.action eq 2 ? 'View' : 
+																e.action eq 3 ? 'Login' : 
+																e.action eq 4 ? 'Logout' : 
+																e.action eq 5 ? 'Download' : 
+																e.action eq 6 ? 'Delete' : ''}" />
+									</p:column>
+									<p:column headerText="User" filterBy="#{e.cuser}" style="padding:3px; overflow:auto !important"
+										filterMatchMode="contains" width="60">
+										<h:outputText value="#{e.cuser}" />
+									</p:column>
+									<p:column headerText="Date / Time" width="75">
+										<h:outputText value="#{e.cdate}">
+											<f:convertDateTime pattern="dd MMM yyyy" />
+										</h:outputText>
+										<h:outputText value=" - "/>
+										
+										<h:outputText value="#{e.ctime}">
+											<f:convertDateTime pattern="HH:mm" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Details">
+										<h:outputText value="#{e.details}" />
+									</p:column>
+								</p:dataTable>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+				</p:outputPanel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

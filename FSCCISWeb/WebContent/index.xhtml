@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<title>Facelet Title</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+
+		<ui:define name="rightpane">
+			<div class="grid-container layoutheight">
+				<div id="aa" class="grid-item">
+				
+				<pe:layout position="center" styleClass="layoutheight noborder">
+					<h2>Welcome!</h2>
+					<br />
+					<p class="responsivewelcome"></p>
+
+					<h:outputText rendered="#{not authBean.loggedIn}">Please SIGN IN to continue</h:outputText>
+				</pe:layout>
+				
+				</div>
+				<div id="bb" class="grid-item">
+				
+				<pe:layout position="east" minSize="250" maxSize="400"
+					styleClass="layoutheight noborder">
+
+					<h:form id="form" rendered="#{not authBean.loggedIn}">
+							<p:growl id="msgs" showDetail="true" sticky="false" />
+							<p:focus for="username" />
+							<p:outputPanel styleClass="transparent noborder"
+							style="padding:10px">
+							<p:panelGrid styleClass="transparent_table">
+								<p:row>
+									<p:column>
+										<h:outputText value="Sign In">
+											<p:graphicImage library="images/common" name="key.png" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column>
+										<p:outputLabel for="username" value="Username:"
+											style="font-weight:bold;display:block" />
+										<p:inputText required="true"
+											requiredMessage="Username is Required" id="username"
+											tabindex="1" autocomplete="off" value="#{loginBean.username}"
+											label="username" immediate="true" placeholder="username" />
+									</p:column>
+									<p:column>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column>
+										<p:outputLabel for="password" value="Password:"
+											style="font-weight:bold;display:block" />
+										<p:password required="true" placeholder="password"
+											tabindex="2" autocomplete="off" value="#{loginBean.password}"
+											styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"
+											id="password" label="password" />
+									</p:column>
+									<p:column>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2">
+										<p:link update=":form:msgs jcaptchaImg" immediate="true"
+											ajax="false">
+											<p:graphicImage id="jcaptchaImg" cache="false"
+												value="#{captchaManager.captchaImage}"
+												style="border: 1px solid" />
+										</p:link>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column>
+										<p:outputLabel for="jcaptcha" value="Captcha:"
+											style="font-weight:bold;display:block" />
+										<p:inputText required="true" id="jcaptcha" tabindex="3"
+											autocomplete="off" value="#{loginBean.jcaptcha}" />
+									</p:column>
+									<p:column>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column colspan="2">
+										<p:commandButton value="Sign In" action="#{loginBean.login}"
+											tabindex="4" ajax="false" update=":form:msgs jcaptchaImg " />
+									</p:column>
+								</p:row>
+								<p:row>
+								</p:row>
+								<p:row>
+									<p:column colspan="2">
+										<p:commandLink process="username" update=":form:msgs"
+											action="#{loginBean.forgotPassword}"
+											style="font-style:italic;">
+											<h:graphicImage library="images/common" name="help.png" />
+											<h:outputText value="Forgot Password?" />
+										</p:commandLink>
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+						</p:outputPanel>
+					</h:form>
+				</pe:layout>
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+

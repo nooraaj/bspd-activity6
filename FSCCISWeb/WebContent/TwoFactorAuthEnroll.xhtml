@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Two Factor-Authentication Enrollment</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+
+		<ui:define name="rightpane">
+			<div class="login_form">
+				<h:form id="form">
+					<p:growl id="msgs" showDetail="true" sticky="false" />
+						<p:panel header="Page Not Found" rendered="#{twoFactorAuthEnrollBean.sessionInvalid}">
+						Sorry. Your requested page cannot be found. Invalid Session Detected.
+						</p:panel>
+<!-- 						<p:panel header="Page Not Found" rendered="#{not twoFactorAuthEnrollBean.sessionInvalid}"> -->
+<!-- 						Sorry. Your requested page cannot be access via Address bar.  -->
+<!-- 						</p:panel> -->
+						<p:panel header="Two Factor - Authentication Enrollment" styleClass="transparent noborder" rendered="#{not twoFactorAuthEnrollBean.sessionInvalid}" >
+							<p:outputPanel styleClass="ui-widget-content" style="padding:10px">
+								<p:panelGrid styleClass="transparent_table">
+									<p:row>
+										<p:column colspan="2">
+											<p:commandButton value="Generate"
+												update="form" action="#{twoFactorAuthEnrollBean.generate}" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:outputLabel for="serialNumber" value="Serial Number:" />
+										</p:column>
+										<p:column>
+											<p:inputText required="false" id="serialNumber"
+												value="#{twoFactorAuthEnrollBean.serialNumber}" placeholder="Serial Number" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:outputLabel for="activationCode" value="Activation Code:" />
+										</p:column>
+										<p:column>
+											<p:inputText required="false" id="activationCode"
+												value="#{twoFactorAuthEnrollBean.activationCode}" placeholder="Activation Code" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:outputLabel for="registrationCode" value="Registration Code:" />
+										</p:column>
+										<p:column>
+											<p:inputText required="false" id="registrationCode"
+												value="#{twoFactorAuthEnrollBean.registrationCode}" placeholder="Registration Code" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:commandButton value="Register"
+											update=":form:msgs" action="#{twoFactorAuthEnrollBean.register}" />
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</p:outputPanel>
+						</p:panel>
+				</h:form>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

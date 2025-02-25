@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-bnd
+	xmlns="http://websphere.ibm.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-application-bnd_1_2.xsd"
+	version="1.2">
+
+	<security-role name="System Admin">
+		<group name="System Admin" />
+	</security-role>
+	<security-role name="Uploader">
+		<group name="Uploader" />
+	</security-role>
+	<security-role name="Viewer">
+		<group name="Viewer" />
+	</security-role>
+</application-bnd>

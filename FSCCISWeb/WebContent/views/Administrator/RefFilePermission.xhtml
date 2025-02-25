@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Facelet Title</title>
+</h:head>
+<h:body>
+	<ui:composition template="/WEB-INF/template/template.xhtml">
+		<ui:define name="title">
+			<c:set var="title" value="File Permissions #{authBean.testMode ? '[TEST MODE]':''}" scope="request" />
+		</ui:define>
+		<ui:define name="rightpane">
+			<h:outputScript library="js" name="script.js" />
+			<h:form id="form">
+				
+				<p:growl id="growl" showDetail="true" />
+				<p:remoteCommand action="#{refFilePermissionBean.toggleFolder}" name="toggleFolder"
+					onstart="saveScrollPos();"
+            		oncomplete="synchronizeRowsHeight();getScrollPos();"/>
+				
+				<p:panelGrid styleClass="agencyGroupListPanel" columns="2"  
+					rendered="#{p:ifGranted('System Admin') and authBean.agencyGroup.accessLevel eq 1}">
+					<h:outputLabel id="agencyGroupListLabel" for="agencyGroupList" value="Showing Files For: "/>
+					<p:selectOneMenu id="agencyGroupList" value="#{refFilePermissionBean.focusAgencyGroup}">
+						<p:ajax event="change" listener="#{refFilePermissionBean.initDisplay}" 
+							oncomplete="synchronizeRowsHeight();" update=":form"/>
+						<f:converter converterId="RefAgencyGroupConverter"/>
+						<f:selectItems value="#{refFilePermissionBean.agencyGroupList}" var="aGroup" itemLabel="#{aGroup.agencyGroupShortname}" itemValue="#{aGroup}"/>
+					</p:selectOneMenu>
+				</p:panelGrid>
+				
+				<p:dataTable id="permissionTable" value="#{refFilePermissionBean.orderedFolderFiles}" var="f"
+					rendered="#{p:ifGranted('System Admin') and authBean.agencyGroup.accessLevel eq 1}"
+					styleClass="tdwordwrap permissionTable"
+					scrollable="true" frozenColumns="1">
+					
+					<p:columnGroup id="frzH" type="frozenHeader">
+						
+			            <p:row>
+			                <ui:repeat value="#{refFilePermissionBean.fheader}" var="h1">
+			                	<p:column id="fh" styleClass="fileFolderHeader smallertext" style="padding: 1px; border-width: 1px;">
+			                		<f:facet name="header">
+								        <h:graphicImage library="images" name="Folder-Closed-icon.png" 
+								        	rendered="#{h1.rowSpan eq 1}"/>
+								        <h:outputText escape="false" value="#{h1.name}"/>
+								    </f:facet>
+		                		</p:column>
+			                </ui:repeat>
+			            </p:row>
+					</p:columnGroup>
+				
+					<p:columnGroup id="scrHead" type="scrollableHeader">
+			            <p:row>
+			                <ui:repeat value="#{refFilePermissionBean.header1}" var="h1">
+			                	<p:column id="ch1" styleClass="smallertext"
+			                		rowspan="#{h1.rowSpan}" colspan="#{h1.colSpan}" style="padding: 1px; border-width: 1px;">
+			                		<f:facet name="header">
+								        <h:outputText id="h1name" value="#{h1.name}"/>
+								    </f:facet>
+		                		</p:column>
+			                </ui:repeat>
+			            </p:row>
+			            <p:row>
+			                <ui:repeat value="#{refFilePermissionBean.header2}" var="h2">
+			                	<p:column id="ch2" styleClass="#{h2.colSpan gt 1 ? '':'narrow'} smallertext"
+			                		rowspan="#{h2.rowSpan}" colspan="#{h2.colSpan}" style="padding: 0px; border-width: 1px;">
+			                		<f:facet name="header">
+			                		
+			                			<p:commandLink ajax="false" target="_blank" style="text-decoration: none;"  
+							            	action="#{refFilePermissionBean.preview(h2.name)}"
+							            	title="Preview #{agencyGroup.agencyGroupShortname}">
+							            	<h:outputText styleClass="ui-icon ui-icon-search" style="display:inline-block"/>
+							            	<h:outputText value="#{h2.name}"/>
+						            	</p:commandLink>
+						    			<br/>
+						    			
+						    			<div class="outerdiv">
+		                					<div class="indiv t" style="display: table-cell;vertical-align: middle;">
+					    						<p:selectBooleanCheckbox styleClass="tinychkbox"    
+					    							onchange="toggleFolder([{name:'key',value:#{refFilePermissionBean.formatAgencyAndFolder(refFilePermissionBean.focusAgencyGroup.agencyGroupId,h2.permId.toString())}}])"
+					    							value="#{refFilePermissionBean.displayDataMap[refFilePermissionBean.focusAgencyGroup.agencyGroupId.toString().concat(refFilePermissionBean.folderMapSeparator).concat(h2.permId.toString())]}">
+								            	</p:selectBooleanCheckbox>
+								            	<p:selectBooleanCheckbox styleClass="tinychkbox" rendered="false" 
+							  							value="#{refFilePermissionBean.displayDataMap[refFilePermissionBean.focusAgencyGroup.agencyGroupId.toString().concat(refFilePermissionBean.folderMapSeparator).concat(h2.permId.toString())]}">
+									            	<p:ajax update="@form" process="@this" partialSubmit="true" 
+									            		listener="#{refFilePermissionBean.toggleFolder(refFilePermissionBean.focusAgencyGroup.agencyGroupId.toString().concat(refFilePermissionBean.folderMapSeparator).concat(h2.permId.toString()))}"
+									            		onstart="saveScrollPos();"
+									            		oncomplete="synchronizeRowsHeight();getScrollPos();"/>
+								            	</p:selectBooleanCheckbox>
+			            					</div>
+		                					<div class="indiv tt" style="padding-left: 5px;padding-right: 3px;display: table-cell;vertical-align: middle;">
+						            				<!-- <h:outputText styleClass="tinytext" value="Folder Visible?"/> -->
+		                					</div>
+                						</div>
+								    </f:facet>
+		                		</p:column>
+			                </ui:repeat>
+			            </p:row>
+			        </p:columnGroup>
+			        
+			        <p:column styleClass="fileFolderHeader #{f.fileType eq 1 ? 'ui-widget-header ui-datatable-subtable-header':''}">
+			        
+			        	<p:panelGrid styleClass="transparent_table noborder #{f.fileType eq 1 ? 'folderDisp':'fileDisplay'}">
+			        		<p:row>
+			        			<p:column style="width:15px;">
+			        				<h:graphicImage library="images" name="Folder-Closed-icon.png" 
+										rendered="#{f.fileType eq 1}"/>
+									<h:graphicImage library="images" name="pdf.png"
+						        		rendered="#{f.fileType eq 2}"/>
+						        	<h:graphicImage library="images" name="xls.png"
+						        		rendered="#{f.fileType eq 3}"/>
+						        	<h:graphicImage library="images" name="ppt.png"
+						        		rendered="#{f.fileType eq 4}"/>
+						        	<h:graphicImage library="images" name="doc.png"
+						        		rendered="#{f.fileType eq 5}"/>
+			        			</p:column>
+			        			<p:column>
+			        				<h:outputText escape="false" value="#{f.fileName}"/><br/>
+			        			</p:column>
+			        		</p:row>
+		        			<p:row>
+		        				<p:column></p:column>
+		        				<p:column>
+		        					<div class="indiv t" style="display: table-cell;vertical-align: middle;">
+			    						<p:selectBooleanCheckbox id="h1cb" styleClass="tinychkbox" rendered="#{f.fileType eq 1}" 
+			    							value="#{refFilePermissionBean.displayDataMap['FOLDER_'.concat(f.filePropertyId.toString())]}">
+		                					<p:ajax update=":form:permissionTable" process=":form:permissionTable" listener="#{refFilePermissionBean.toggleAllFilesForAllAgencies(f.filePropertyId)}"
+		            							onstart="saveScrollPos();"
+			            						oncomplete="synchronizeRowsHeight();getScrollPos()">
+	            							</p:ajax>	
+						            	</p:selectBooleanCheckbox>
+						            	
+						            	<p:selectBooleanCheckbox id="h2cb" styleClass="tinychkbox" rendered="#{f.fileType ne 1}" 
+						            		value="#{refFilePermissionBean.displayDataMap['FILE_'.concat(f.filePropertyId.toString())]}" >
+		                					<p:ajax update=":form:permissionTable" process="@this :form:permissionTable" listener="#{refFilePermissionBean.toggleForAllAgencies(f.filePropertyId)}"
+		            							onstart="saveScrollPos();"
+	            								oncomplete="synchronizeRowsHeight();getScrollPos()"/>
+			            				</p:selectBooleanCheckbox>
+	            					</div>
+                					<div class="indiv tt" style="padding-left: 5px;padding-right: 3px;display: table-cell;vertical-align: middle;">
+				            				<h:outputText styleClass="tinytext" value="#{f.fileType eq 1 ? 'Check ALL files for ALL groups':'Check file for ALL groups'}"/>
+                					</div>
+		        				</p:column>
+		        			</p:row>
+				        	
+					        
+				        </p:panelGrid>
+				         
+			        	
+			        </p:column>
+			        
+			        <p:columns value="#{refFilePermissionBean.header2}" var="agencyGroupId" styleClass="fileFolderCb narrow #{f.fileType eq 1 ? 'ui-widget-header ui-datatable-subtable-header':''}">
+			        	<p:selectBooleanCheckbox styleClass="indivcheckbox" rendered="#{f.fileType ne 1}" 
+			        		value="#{refFilePermissionBean.displayDataMap[agencyGroupId.permId.toString().concat(refFilePermissionBean.fileMapSeparator).concat(f.filePropertyId)]}">
+			            	<p:ajax update="@form" process="@this" partialSubmit="true" listener="#{refFilePermissionBean.toggleFile(agencyGroupId.permId.toString().concat(refFilePermissionBean.fileMapSeparator).concat(f.filePropertyId),true)}"
+								onstart="saveScrollPos();"
+			            		oncomplete="synchronizeRowsHeight();getScrollPos()"/>
+		            	</p:selectBooleanCheckbox>
+		            	
+		            	
+		            	<p:selectBooleanCheckbox id="h1cb" styleClass="h1checkbox" rendered="#{f.fileType eq 1}" 
+   							value="#{refFilePermissionBean.displayDataMap['AGENCY_'.concat(agencyGroupId.permId.toString()).concat(refFilePermissionBean.fileMapSeparator).concat(f.filePropertyId)]}">
+              					<p:ajax update=":form:permissionTable" process=":form:permissionTable" listener="#{refFilePermissionBean.toggleAllFilesForAgency(f.filePropertyId,agencyGroupId.permId)}"
+          							onstart="saveScrollPos();"
+           						oncomplete="synchronizeRowsHeight();getScrollPos()">
+         							</p:ajax>	
+		            	</p:selectBooleanCheckbox>
+			        </p:columns>
+					
+				</p:dataTable>
+				
+			</h:form>
+			<h:outputScript type="text/javascript">
+			      $ = jQuery;
+		           var scrollPosLeft;
+		           var scrollPosTop;
+		
+		           function saveScrollPos() {
+		                        scrollPosLeft = $(".ui-datatable-scrollable-container > .ui-datatable-scrollable-body").scrollLeft();
+		                        scrollPosTop = $(".ui-datatable-scrollable-container > .ui-datatable-scrollable-body").scrollTop();
+		           }
+		           function getScrollPos() {
+		                 $(".ui-datatable-scrollable-container > .ui-datatable-scrollable-body").scrollLeft(scrollPosLeft);
+		                 $(".ui-datatable-scrollable-container > .ui-datatable-scrollable-body").scrollTop(scrollPosTop);
+		           } 
+			</h:outputScript> 
+			<h:outputScript>
+				window.onload = function() {
+					synchronizeRowsHeight(); 
+				};
+			</h:outputScript>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
